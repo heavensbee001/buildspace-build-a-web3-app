@@ -6,24 +6,38 @@ import "hardhat/console.sol";
 
 contract WavePortal {
     uint256 totalWaves;
-    mapping(address=>uint256) waves;
-
     uint256 totalHangLooses;
-    mapping(address=>uint256) hangLooses;
+
+    enum WaveType { WAVE, HANGLOOSE }
+    struct Wave {
+        WaveType _type;
+        address waver;
+        string message;
+        uint256 timestamp;
+    }
+
+    Wave[] waves;
+
+    event NewWave(WaveType _type, address indexed from, uint256 timestamp, string message);
 
     constructor() {
         console.log("Yo yo, I am a contract and I am smart");
     }
 
-    function wave() public {
-        waves[msg.sender] += 1;
-        totalWaves += 1;
-        console.log("%s has waved!", msg.sender);
+    function wave(WaveType _type, string memory _message) public {
+        waves.push(Wave(_type, msg.sender, _message, block.timestamp));
+        if (_type == WaveType.WAVE) {
+            totalWaves += 1;
+            console.log("%s has waved!", msg.sender);
+        } else if (_type == WaveType.HANGLOOSE) {
+            totalHangLooses += 1;
+            console.log("%s has saluted with a shaka!", msg.sender);
+        }
+        emit NewWave(_type, msg.sender, block.timestamp, _message);
     }
-    function hangLoose() public {
-        hangLooses[msg.sender] += 1;
-        totalHangLooses += 1;
-        console.log("%s has done the hang loose sign!", msg.sender);
+
+    function getAllWaves() public view returns (Wave[] memory) {
+        return waves;
     }
 
     function getTotalWaves() public view returns (uint256) {

@@ -11,31 +11,25 @@ const main = async () => {
     let waveCount;
     waveCount = await waveContract.getTotalWaves();
 
-    let waveTxn = await waveContract.wave();
+    let waveTxn = await waveContract.wave(0, "wave message 1");
     await waveTxn.wait();
   
     waveCount = await waveContract.getTotalWaves();
-  
-    waveTxn = await waveContract.connect(randomPerson).wave();
-    await waveTxn.wait();
-  
-    waveCount = await waveContract.getTotalWaves();
+    console.log("waveCount -->", waveCount);
     
-    // hang loose
-    let hangLooseCount;
-    hangLooseCount = await waveContract.getTotalHangLooses();
-  
-    waveTxn = await waveContract.hangLoose();
+    waves = await waveContract.getAllWaves();
+    console.log("waves -->", waves);
+    
+    waveTxn = await waveContract.connect(randomPerson).wave(1, "hang loose message 1");
     await waveTxn.wait();
-  
-    hangLooseCount = await waveContract.getTotalHangLooses();
-  
-    waveTxn = await waveContract.connect(randomPerson).hangLoose();
+    waveTxn = await waveContract.connect(randomPerson).wave(1, "hang loose message 2");
     await waveTxn.wait();
-    waveTxn = await waveContract.connect(randomPerson).hangLoose();
-    await waveTxn.wait();
-  
-    hangLooseCount = await waveContract.getTotalHangLooses();
+    
+    waveCount = await waveContract.getTotalHangLooses();
+    console.log("hangLooseCount -->", waveCount);
+
+    waves = await waveContract.getAllWaves();
+    console.log("waves -->", waves);
   };
   
   const runMain = async () => {
