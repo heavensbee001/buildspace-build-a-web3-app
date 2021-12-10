@@ -20,6 +20,8 @@ contract WavePortal {
 
     Wave[] waves;
 
+    mapping(address => uint256) public lastWavedAt;
+
     event NewWave(WaveType _type, address indexed from, uint256 timestamp, string message);
 
     constructor() payable {
@@ -29,6 +31,13 @@ contract WavePortal {
     }
 
     function wave(WaveType _type, string memory _message) public {
+
+        require(
+            lastWavedAt[msg.sender] + 5 minutes < block.timestamp,
+            "Wait 5 minutes"
+        );
+        lastWavedAt[msg.sender] = block.timestamp;
+
         waves.push(Wave(_type, msg.sender, _message, block.timestamp));
 
         seed = (block.difficulty + block.timestamp + seed) % 100;
